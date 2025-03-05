@@ -4,6 +4,8 @@ gremlinpython>=3.7.2
 networkx==3.4.2
 matplotlib==3.9.4
 scipy==1.15.0
+torch==2.5.1
+torch-geometric==2.6.1
 
 jupyter
 ipykernel
