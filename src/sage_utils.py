@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import torch
 
-def get_new_sage_embedding(model, new_feature, device, self_loop=True):
+def get_new_sage_embedding(model, new_feature, device="cuda", self_loop=True):
     """
     Generate a new node embedding using the trained GraphSAGE model.
 
