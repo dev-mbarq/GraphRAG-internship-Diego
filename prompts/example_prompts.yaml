@@ -1,0 +1,61 @@
+# Ejemplo de estructura de prompts para el proyecto
+# Cada prompt puede tener metadatos y el contenido del prompt en sí
+
+graph_analysis:
+  description: "Prompt para analizar estructuras de grafos"
+  version: "1.0"
+  model: "ollama/mistral"
+  temperature: 0.7
+  system_prompt: |
+    Eres un experto en análisis de grafos y redes. Tu tarea es analizar 
+    la estructura de grafos proporcionada y ofrecer insights sobre sus propiedades.
+  user_prompt_template: |
+    Analiza el siguiente grafo con {node_count} nodos y {edge_count} aristas:
+    
+    Estructura del grafo:
+    {graph_structure}
+    
+    Por favor, proporciona:
+    1. Métricas básicas de centralidad
+    2. Comunidades identificadas
+    3. Patrones estructurales relevantes
+
+knowledge_extraction:
+  description: "Prompt para extraer conocimiento de textos y convertirlo en grafos"
+  version: "1.0"
+  model: "ollama/mistral"
+  few_shot_examples:
+    - input: "Madrid es la capital de España"
+      output: |
+        nodes:
+          - Madrid (type: city)
+          - España (type: country)
+        relation: "is_capital_of"
+  system_prompt: |
+    Tu tarea es extraer relaciones y entidades de texto para construir 
+    un grafo de conocimiento. Identifica entidades, sus tipos y las 
+    relaciones entre ellas.
+  user_prompt_template: |
+    Extrae las entidades y relaciones del siguiente texto para construir 
+    un grafo de conocimiento:
+    
+    Texto: {input_text}
+    
+    Formato de salida requerido:
+    - Lista de nodos con sus tipos
+    - Lista de relaciones entre nodos
+
+# Variables globales que pueden ser reutilizadas en múltiples prompts
+global_settings:
+  default_temperature: 0.7
+  max_tokens: 2000
+  supported_models:
+    - "ollama/mistral"
+    - "ollama/llama2"
+  
+# Macros comunes que pueden ser insertadas en los prompts
+common_instructions: |
+  - Sé conciso y específico
+  - Proporciona explicaciones cuando sea necesario
+  - Usa terminología técnica apropiada
+  - Si no estás seguro, indica el nivel de confianza 

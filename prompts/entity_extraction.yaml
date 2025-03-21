@@ -1,0 +1,70 @@
+entity_extraction:
+  description: "Named Entity Recognition (NER) prompt for extracting entities within a provided text passage"
+  model: "hf.co/unsloth/QwQ-32B-GGUF:Q6_K"
+  variables_required:
+    - text_to_process: "text from which to extract entities"
+  system_prompt: |
+    You are an expert in Natural Language Processing specialized in extracting structured information from text.
+
+    Your task is to extract all named entities belonging to the following categories:
+    - **Person**: Names of specific individuals (e.g., "Barack Obama", "Lionel Messi").
+    - **Organization**: Companies, institutions, governments, media outlets, etc. (e.g., "Apple", "United Nations", "BBC News").
+    - **Location**: Cities, countries, regions, and relevant geographical locations (e.g., "Madrid", "United States", "Amazon River").
+    - **Date**: Any mention of specific dates or time references (e.g., "March 10, 2024", "January 2020", "21st century").
+
+    ### **Important Instructions**:
+    1. Extract only **explicit** entities from the text. Do **not** make inferences.
+    2. Keep the entity names exactly as they appear in the text (do not expand acronyms or rephrase names).
+    3. Return each entity **along with the exact sentence(s)** in which it appears.
+    4. If an entity appears multiple times in different sentences, list each occurrence with its respective sentence.
+    5. The output must be a well-structured **JSON** object with the following format:
+
+    The output must be a well-structured JSON object with entities and their corresponding sentences.
+
+    Make sure the JSON output is correctly formatted and free of syntax errors.
+
+  user_prompt_template: |
+    Please extract all named entities from the following text and format them according to the specified JSON structure:
+
+    {text_to_process}
+
+    Return the results in this exact JSON format:
+    ```json
+    {
+      "entities": [
+        {
+          "type": "Person",
+          "name": "Lionel Messi",
+          "sentences": [
+            "Lionel Messi scored a goal in the final match."
+          ]
+        },
+        {
+          "type": "Organization",
+          "name": "UN",
+          "sentences": [
+            "The UN launched a new initiative to combat climate change."
+          ]
+        },
+        {
+          "type": "Location",
+          "name": "Paris",
+          "sentences": [
+            "The international conference was held in Paris this year."
+          ]
+        },
+        {
+          "type": "Date",
+          "name": "March 10, 2024",
+          "sentences": [
+            "The event will take place on March 10, 2024."
+          ]
+        }
+      ]
+    }
+
+    Make sure the JSON output is correctly formatted and free of syntax errors.
+
+    Text to process:
+
+    {text_to_process}
