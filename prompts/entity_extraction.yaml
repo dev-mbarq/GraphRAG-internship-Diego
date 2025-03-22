@@ -29,35 +29,35 @@ entity_extraction:
     {text_to_process}
 
     Return the results in this exact JSON format:
-    
+    ```json
     {
-      entities: [
+      \"entities\": [
         {
-          type: Person,
-          name: Lionel Messi,
-          sentences: [
-            Lionel Messi scored a goal in the final match.
+          \"type\": \"Person\",
+          \"name\": \"Lionel Messi\",
+          \"sentences\": [
+            \"Lionel Messi scored a goal in the final match.\"
           ]
         },
         {
-          type: Organization,
-          name: UN,
-          sentences: [
-            The UN launched a new initiative to combat climate change.
+          \"type\": \"Organization\",
+          \"name\": \"UN\",
+          \"sentences\": [
+            \"The UN launched a new initiative to combat climate change.\"
           ]
         },
         {
-          type: Location,
-          name: Paris,
-          sentences: [
-            The international conference was held in Paris this year.
+          \"type\": \"Location\",
+          \"name\": \"Paris\",
+          \"sentences\": [
+            \"The international conference was held in Paris this year.\"
           ]
         },
         {
-          type: Date,
-          name: March 10, 2024,
-          sentences: [
-            The event will take place on March 10, 2024.
+          \"type\": \"Date\",
+          \"name\": \"March 10, 2024\",
+          \"sentences\": [
+            \"The event will take place on March 10, 2024.\"
           ]
         }
       ]

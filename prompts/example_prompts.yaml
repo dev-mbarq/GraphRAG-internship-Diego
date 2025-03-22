@@ -1,51 +1,51 @@
-# Ejemplo de estructura de prompts para el proyecto
-# Cada prompt puede tener metadatos y el contenido del prompt en sí
+# Example prompt structure for the project
+# Each prompt can have metadata and the prompt content itself
 
 graph_analysis:
-  description: "Prompt para analizar estructuras de grafos"
+  description: "Prompt for analyzing graph structures"
   version: "1.0"
   model: "ollama/mistral"
   temperature: 0.7
   system_prompt: |
-    Eres un experto en análisis de grafos y redes. Tu tarea es analizar 
-    la estructura de grafos proporcionada y ofrecer insights sobre sus propiedades.
+    You are an expert in graph and network analysis. Your task is to analyze 
+    the provided graph structure and offer insights about its properties.
   user_prompt_template: |
-    Analiza el siguiente grafo con {node_count} nodos y {edge_count} aristas:
+    Analyze the following graph with {node_count} nodes and {edge_count} edges:
     
-    Estructura del grafo:
+    Graph structure:
     {graph_structure}
     
-    Por favor, proporciona:
-    1. Métricas básicas de centralidad
-    2. Comunidades identificadas
-    3. Patrones estructurales relevantes
+    Please provide:
+    1. Basic centrality metrics
+    2. Identified communities
+    3. Relevant structural patterns
 
 knowledge_extraction:
-  description: "Prompt para extraer conocimiento de textos y convertirlo en grafos"
+  description: "Prompt for extracting knowledge from text and converting it to graphs"
   version: "1.0"
   model: "ollama/mistral"
   few_shot_examples:
-    - input: "Madrid es la capital de España"
+    - input: "Madrid is the capital of Spain"
       output: |
         nodes:
           - Madrid (type: city)
-          - España (type: country)
+          - Spain (type: country)
         relation: "is_capital_of"
   system_prompt: |
-    Tu tarea es extraer relaciones y entidades de texto para construir 
-    un grafo de conocimiento. Identifica entidades, sus tipos y las 
-    relaciones entre ellas.
+    Your task is to extract relationships and entities from text to build 
+    a knowledge graph. Identify entities, their types, and the 
+    relationships between them.
   user_prompt_template: |
-    Extrae las entidades y relaciones del siguiente texto para construir 
-    un grafo de conocimiento:
+    Extract entities and relationships from the following text to build 
+    a knowledge graph:
     
-    Texto: {input_text}
+    Text: {input_text}
     
-    Formato de salida requerido:
-    - Lista de nodos con sus tipos
-    - Lista de relaciones entre nodos
+    Required output format:
+    - List of nodes with their types
+    - List of relationships between nodes
 
-# Variables globales que pueden ser reutilizadas en múltiples prompts
+# Global variables that can be reused across multiple prompts
 global_settings:
   default_temperature: 0.7
   max_tokens: 2000
@@ -53,9 +53,9 @@ global_settings:
     - "ollama/mistral"
     - "ollama/llama2"
   
-# Macros comunes que pueden ser insertadas en los prompts
+# Common macros that can be inserted into prompts
 common_instructions: |
-  - Sé conciso y específico
-  - Proporciona explicaciones cuando sea necesario
-  - Usa terminología técnica apropiada
-  - Si no estás seguro, indica el nivel de confianza 
+  - Be concise and specific
+  - Provide explanations when necessary
+  - Use appropriate technical terminology
+  - If you're unsure, indicate your confidence level 
