@@ -1,6 +1,6 @@
 import torch
 from torch.cuda.amp import autocast
-from losses import unsupervised_loss
+from loss_functions import unsupervised_loss
 from tqdm import tqdm
 
 

@@ -5,34 +5,25 @@ from torch_geometric.nn import SAGEConv
 
 class GraphSAGE(torch.nn.Module):
     """
-    Implementación del modelo GraphSAGE para aprendizaje de representaciones de nodos en grafos.
+    Implementation of the GraphSAGE model for node representation learning in graphs.
 
     Parameters:
-        in_channels (int): Dimensionalidad de las características de entrada.
-        hidden_channels (int): Dimensionalidad de la capa oculta.
-        out_channels (int): Dimensionalidad de las representaciones de salida.
-        num_layers (int): Número de capas GraphSAGE (default es 2).
+        channels (list of int): List of layer dimensions, including input and output.
     """
 
-    def __init__(self, in_channels, hidden_channels, out_channels, num_layers=2):
+    def __init__(self, channels):
         super(GraphSAGE, self).__init__()
         self.convs = torch.nn.ModuleList()
 
-        # Primera capa: de in_channels a hidden_channels
-        self.convs.append(SAGEConv(in_channels, hidden_channels))
-
-        # Capas intermedias (si num_layers > 2)
-        for _ in range(num_layers - 2):
-            self.convs.append(SAGEConv(hidden_channels, hidden_channels))
-
-        # Última capa: de hidden_channels a out_channels
-        self.convs.append(SAGEConv(hidden_channels, out_channels))
+        # Create SAGEConv layers using the dimensions from the channels list
+        for i in range(len(channels) - 1):
+            self.convs.append(SAGEConv(channels[i], channels[i + 1]))
 
     def forward(self, x, edge_index):
-        # Propagación en capas intermedias con activación ReLU
+        # Propagation through intermediate layers with ReLU activation
         for conv in self.convs[:-1]:
             x = conv(x, edge_index)
             x = F.relu(x)
-        # Última capa sin activación
+        # Last layer without activation
         x = self.convs[-1](x, edge_index)
         return x

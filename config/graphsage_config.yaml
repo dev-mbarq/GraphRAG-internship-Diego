@@ -1,0 +1,19 @@
+model_params:
+  channels: [1024, 512, 256]
+  num_layers: 2
+
+loader_params:
+  num_neighbors: [25, 15]
+  batch_size: 512
+  shuffle: true
+
+input_data:
+  graph_file_name: "multihop_graph_w_sem_embeddings.pkl"
+  embedding_dim: 1024
+
+optimizer_params:
+  learning_rate: 0.0001
+
+training_params:
+  num_epochs: 100
+
