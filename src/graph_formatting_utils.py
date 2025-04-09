@@ -6,7 +6,7 @@ import torch
 def prepare_graph_for_gnn(G, embedding_dim=1024):
     """
     Preprocess a NetworkX graph for GNN training by ensuring all nodes have only the 'embedding' attribute,
-    converting embeddings to torch.Tensor, and making the graph undirected.
+    converting embeddings to torch.Tensor, and making the graph undirected. Also removes all edge attributes.
 
     Parameters:
     -----------
@@ -29,6 +29,7 @@ def prepare_graph_for_gnn(G, embedding_dim=1024):
     - Embeddings are converted to `torch.Tensor` with dtype `torch.float32`.
     - The graph is converted to an undirected format.
     - Nodes with incorrect embedding dimensions are identified and returned.
+    - All edge attributes are removed.
     """
 
     # Convert the graph to an undirected version
@@ -68,6 +69,10 @@ def prepare_graph_for_gnn(G, embedding_dim=1024):
         else:
             # If no embedding, add to incorrect dimension list
             incorrect_dim_nodes.append(node)
+
+    # Remove all edge attributes
+    for u, v in G_undirected.edges():
+        G_undirected[u][v].clear()
 
     # Return the undirected graph and list of nodes with incorrect dimensions
     return G_undirected, incorrect_dim_nodes
