@@ -5,3 +5,30 @@ __pycache__/
 *.pyc
 *.pyo
 /graphsage/
+
+# Notebooks
+notebooks/gnn_training.ipynb
+notebooks/GraphSAGE.ipynb
+notebooks/Untitled.ipynb
+notebooks/multi-hop_data_exploration.ipynb
+notebooks/embedding_exploration.ipynb
+notebooks/semantic_q&a.ipynb
+notebooks/semantic_embedding_generation.ipynb
+notebooks/document_graph_building.ipynb
+notebooks/art_summaries_and_ner.ipynb
+notebooks/hybrid_graph_building.ipynb
+notebooks/entities_filtering.ipynb
+notebooks/scrape_play.ipynb
+
+# Source files
+src/models.py
+src/train.py
+src/losses.py
+src/graphsage.py
+src/visualization_utils.py
+src/sage_utils.py
+src/graph_formatting_utils.py
+src/embedding_utils.py
+
+# Scripts
+scripts/train_graphsage.py

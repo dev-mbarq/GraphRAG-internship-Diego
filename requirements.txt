@@ -4,7 +4,7 @@ gremlinpython>=3.7.2
 networkx==3.4.2
 matplotlib==3.9.4
 scipy==1.15.0
-torch==2.1.0
+torch==2.0.0
 torch-geometric==2.6.1
 numpy==1.26.4
 scikit-learn==1.6.1
