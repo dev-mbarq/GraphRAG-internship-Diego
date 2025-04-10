@@ -1,6 +1,6 @@
 import torch
 from torch.cuda.amp import autocast, GradScaler
-from loss_functions import unsupervised_loss
+from loss_functions import unsupervised_loss_V0, unsupervised_loss_V1
 from tqdm import tqdm
 
 

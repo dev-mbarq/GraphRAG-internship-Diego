@@ -70,23 +70,23 @@ def unsupervised_loss_V1(z, edge_index, num_neg_samples=5):
     """
     Computes the unsupervised loss for GraphSAGE using contrastive negative sampling.
 
-    The loss encourages dot products between embeddings of connected nodes to be high
-    (using log(sigmoid(dot_product))) and between embeddings of non-connected nodes
-    to be low (using log(sigmoid(-dot_product))).
+    The loss encourages high dot-product similarity between connected node embeddings
+    (using log(sigmoid(dot_product))) and low similarity between embeddings of non-connected nodes
+    (using log(sigmoid(-dot_product))). Negative samples are drawn from nodes that are not neighbors
+    of the source node.
 
     Improvements over the naive implementation:
       - Uses F.logsigmoid for improved numerical stability.
-      - Precomputes neighbor sets per node to efficiently check for negative samples.
+      - Precomputes a neighbor set per node to efficiently check for negative samples.
       - Ensures that a node does not sample itself as a negative example.
 
     Parameters:
         z (torch.Tensor): Node embeddings of shape (num_nodes, embedding_dim).
-        edge_index (torch.Tensor): Connectivity matrix of shape (2, num_edges),
-                                   where each column represents an edge (u, v).
+        edge_index (torch.Tensor): Connectivity matrix of shape (2, num_edges), where each column represents an edge (u, v).
         num_neg_samples (int): Number of negative samples per edge (default: 5).
 
     Returns:
-        torch.Tensor: The averaged unsupervised loss.
+        torch.Tensor: The averaged unsupervised loss, which requires gradients.
     """
     device = z.device
     num_nodes = z.shape[0]
@@ -99,14 +99,15 @@ def unsupervised_loss_V1(z, edge_index, num_neg_samples=5):
         neighbors[u].add(v)
         neighbors[v].add(u)
 
-    pos_loss = 0.0  # Accumulator for positive loss (as a Python float, later converted to tensor)
-    neg_loss = 0.0  # Accumulator for negative loss
+    # Initialize accumulators for the positive and negative loss components as PyTorch tensors.
+    pos_loss = torch.tensor(0.0, device=device)
+    neg_loss = torch.tensor(0.0, device=device)
     total_edges = edge_index.shape[1]
 
     # Loop over each positive edge
     for edge in edge_index.T:
         u, v = edge.tolist()  # Extract node indices
-        # Positive term: apply logsigmoid to the dot product for numerical stability.
+        # Positive term: compute dot product for connected nodes and apply logsigmoid for stability.
         dot_pos = torch.dot(z[u], z[v])
         pos_loss += F.logsigmoid(dot_pos)
 
@@ -119,7 +120,10 @@ def unsupervised_loss_V1(z, edge_index, num_neg_samples=5):
             dot_neg = torch.dot(z[u], z[v_neg])
             neg_loss += F.logsigmoid(-dot_neg)
 
-    # Compute the mean loss per positive edge and negate (since we are minimizing the loss)
+    # Compute the final loss:
+    # Sum the positive and negative losses, negate the sum (for minimization),
+    # and average it by dividing by the total number of positive edges.
     loss = -(pos_loss + neg_loss) / total_edges
-    # Return loss as a tensor on the appropriate device
-    return torch.tensor(loss, device=device)
+
+    # Return the loss tensor (already connected to the computation graph)
+    return loss
