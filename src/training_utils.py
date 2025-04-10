@@ -127,9 +127,8 @@ def train_in_cpu(
 
     # Plot evaluations if plot_eval is True
     if plot_eval:
-        # Plot loss evolution
+        # --- Loss Evolution Plots ---
         plt.figure(figsize=(12, 5))
-
         # Subplot: Average loss per epoch
         plt.subplot(1, 2, 1)
         plt.plot(
@@ -139,8 +138,7 @@ def train_in_cpu(
         plt.xlabel("Epoch")
         plt.ylabel("Loss")
         plt.grid(True)
-
-        # Subplot: Loss per batch over training
+        # Subplot: Loss per batch over the training
         plt.subplot(1, 2, 2)
         plt.plot(
             range(1, len(batch_loss_history) + 1),
@@ -153,11 +151,11 @@ def train_in_cpu(
         plt.xlabel("Batch")
         plt.ylabel("Loss")
         plt.grid(True)
-
         plt.tight_layout()
         plt.show()
+        plt.close("all")  # Close the loss figure before proceeding
 
-        # Plot embedding L2 norm evolution
+        # --- Embedding Norm Evolution Plots ---
         plt.figure(figsize=(12, 5))
         # Subplot: Epoch-level embedding norms (mean and std)
         plt.subplot(1, 2, 1)
@@ -180,7 +178,6 @@ def train_in_cpu(
         plt.ylabel("L2 Norm")
         plt.legend()
         plt.grid(True)
-
         # Subplot: Batch-level embedding norms (mean and std)
         plt.subplot(1, 2, 2)
         plt.plot(
@@ -202,7 +199,6 @@ def train_in_cpu(
         plt.ylabel("L2 Norm")
         plt.legend()
         plt.grid(True)
-
         plt.tight_layout()
         plt.show()
 
@@ -352,7 +348,7 @@ def train_in_gpu(
 
     # Plot evaluations if requested
     if plot_eval:
-        # Plot loss evolution
+        # --- Loss Evolution Plots ---
         plt.figure(figsize=(12, 5))
         # Subplot: Average loss per epoch
         plt.subplot(1, 2, 1)
@@ -378,8 +374,9 @@ def train_in_gpu(
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+        plt.close("all")  # Close the loss figure before proceeding
 
-        # Plot embedding L2 norm evolution
+        # --- Embedding Norm Evolution Plots ---
         plt.figure(figsize=(12, 5))
         # Subplot: Epoch-level embedding norms (mean and std)
         plt.subplot(1, 2, 1)
@@ -423,7 +420,6 @@ def train_in_gpu(
         plt.ylabel("L2 Norm")
         plt.legend()
         plt.grid(True)
-
         plt.tight_layout()
         plt.show()
 
