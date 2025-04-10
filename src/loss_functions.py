@@ -14,7 +14,6 @@ def unsupervised_loss_V0(z, edge_index, num_neg_samples=5):
       - The log-probability of the positive pair: log(sigmoid(dot(z[u], z[v])))
       - For a specified number of negative samples, the log-probability of the
         negative pair: log(1 - sigmoid(dot(z[u], z[v_neg])))
-
     Parameters:
         z (torch.Tensor): Node embeddings with shape (num_nodes, embedding_dim).
         edge_index (torch.Tensor): Connectivity matrix of shape (2, num_edges),
