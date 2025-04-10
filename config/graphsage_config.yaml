@@ -16,4 +16,3 @@ optimizer_params:
 
 training_params:
   num_epochs: 100
-
