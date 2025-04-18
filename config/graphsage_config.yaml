@@ -1,5 +1,5 @@
 model_params:
-  channels: [1024, 512, 256]
+  channels: [1536, 1024, 512]
   num_layers: 2
 
 loader_params:
@@ -8,11 +8,11 @@ loader_params:
   shuffle: true
 
 input_data:
-  graph_file_name: "riziv_dataset/base_hybrid_graph.pkl"
-  embedding_dim: 1024 # BGE-M3: 1024; (OAI) text-embedding-3-small: 1536
+  graph_file_name: "RIZIV_hackathon_main/base_hybrid_graph.pkl"
+  embedding_dim: 1536 # BGE-M3: 1024; (OAI) text-embedding-3-small: 1536
 
 optimizer_params:
   learning_rate: 0.001
 
 training_params:
-  num_epochs: 50
+  num_epochs: 10
