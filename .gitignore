@@ -1,7 +1,14 @@
+# Environment files
 *.env
+
+# Ignore any file or directory that starts with WIP in any level
+**/WIP*
+
+# Data: ignore all content of /data except the own directory
 /data/*
 !/data/
+
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
-/graphsage/

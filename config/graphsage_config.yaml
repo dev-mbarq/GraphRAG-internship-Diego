@@ -3,12 +3,12 @@ model_params:
   num_layers: 2
 
 loader_params:
-  num_neighbors: [50, 2500]
+  num_neighbors: [50, 150]
   batch_size: 512
   shuffle: true
 
 input_data:
-  graph_file_name: "multihop_graph_w_sem_embeddings.pkl"
+  graph_file_name: "riziv_dataset/base_hybrid_graph.pkl"
   embedding_dim: 1024
 
 optimizer_params:
