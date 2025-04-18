@@ -9,7 +9,7 @@ loader_params:
 
 input_data:
   graph_file_name: "riziv_dataset/base_hybrid_graph.pkl"
-  embedding_dim: 1024
+  embedding_dim: 1024 # BGE-M3: 1024; (OAI) text-embedding-3-small: 1536
 
 optimizer_params:
   learning_rate: 0.001
