@@ -554,8 +554,80 @@ def train_model_in_gpu_V2(
 
     # (Optional) Plot evaluation if requested
     if plot_eval:
-        import matplotlib.pyplot as plt
-        # ... reuse your V1 plotting code here ...
+        # --- Loss Evolution Plots ---
+        plt.figure(figsize=(12, 5))
+        # Subplot: Average loss per epoch
+        plt.subplot(1, 2, 1)
+        plt.plot(
+            range(1, num_epochs + 1), epoch_loss_history, marker="o", linestyle="-"
+        )
+        plt.title("Average Loss per Epoch")
+        plt.xlabel("Epoch")
+        plt.ylabel("Loss")
+        plt.grid(True)
+        # Subplot: Loss per batch over the training
+        plt.subplot(1, 2, 2)
+        plt.plot(
+            range(1, len(batch_loss_history) + 1),
+            batch_loss_history,
+            marker=".",
+            linestyle="-",
+            color="orange",
+        )
+        plt.title("Loss per Batch")
+        plt.xlabel("Batch")
+        plt.ylabel("Loss")
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
+        plt.close("all")  # Close the loss figure before proceeding
+
+        # --- Embedding Norm Evolution Plots ---
+        plt.figure(figsize=(12, 5))
+        # Subplot: Epoch-level embedding norms (mean and std)
+        plt.subplot(1, 2, 1)
+        plt.plot(
+            range(1, num_epochs + 1),
+            epoch_norm_mean_history,
+            marker="o",
+            linestyle="-",
+            label="Mean Norm",
+        )
+        plt.plot(
+            range(1, num_epochs + 1),
+            epoch_norm_std_history,
+            marker="o",
+            linestyle="--",
+            label="Std Norm",
+        )
+        plt.title("Embedding Norms per Epoch")
+        plt.xlabel("Epoch")
+        plt.ylabel("L2 Norm")
+        plt.legend()
+        plt.grid(True)
+        # Subplot: Batch-level embedding norms (mean and std)
+        plt.subplot(1, 2, 2)
+        plt.plot(
+            range(1, len(batch_norm_mean_history) + 1),
+            batch_norm_mean_history,
+            marker=".",
+            linestyle="-",
+            label="Mean Norm",
+        )
+        plt.plot(
+            range(1, len(batch_norm_std_history) + 1),
+            batch_norm_std_history,
+            marker=".",
+            linestyle="--",
+            label="Std Norm",
+        )
+        plt.title("Embedding Norms per Batch")
+        plt.xlabel("Batch")
+        plt.ylabel("L2 Norm")
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        plt.show()
 
     return {
         "epoch_loss_history":      epoch_loss_history,

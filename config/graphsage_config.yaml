@@ -1,9 +1,9 @@
 model_params:
-  channels: [1024, 896, 768]
-  num_layers: 2
+  channels: [1024, 896, 768, 640]
+  num_layers: 3
 
 loader_params:
-  num_neighbors: [15, 15]
+  num_neighbors: [15, 15, 15]
   batch_size: 256
   shuffle: true
 
@@ -12,7 +12,7 @@ input_data:
   embedding_dim: 1024 # BGE-M3: 1024; (OAI) text-embedding-3-small: 1536
 
 optimizer_params:
-  learning_rate: 0.0005
+  learning_rate: 0.00001
 
 training_params:
-  num_epochs: 75
+  num_epochs: 15
