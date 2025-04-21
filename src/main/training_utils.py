@@ -2,6 +2,10 @@ import torch
 from torch.cuda.amp import autocast, GradScaler
 from tqdm import tqdm
 import matplotlib.pyplot as plt
+import torch.nn.functional as F
+from torch.nn.utils import clip_grad_norm_
+from torch.optim.lr_scheduler import LinearLR, CosineAnnealingLR
+
 
 
 def train_in_cpu(
@@ -431,4 +435,133 @@ def train_in_gpu(
         "epoch_norm_std_history": epoch_norm_std_history,
         "batch_norm_mean_history": batch_norm_mean_history,
         "batch_norm_std_history": batch_norm_std_history,
+    }
+
+
+def train_model_in_gpu_V2(
+    model,
+    train_loader,
+    optimizer,
+    num_epochs: int,
+    loss_fn,
+    warmup_steps: int,
+    total_steps: int,
+    warmup_start_lr: float = 0.0,
+    warmup_end_lr: float = None,
+    min_lr: float = 1e-6,
+    max_grad_norm: float = 1.0,
+    debug: bool = False,
+    plot_eval: bool = False
+):
+    """
+    Version 2 of the training loop with:
+      - Linear warm‑up of the LR
+      - Cosine‑annealing decay of the LR
+      - Gradient clipping
+      - Fixed scheduler ordering and non‑zero warmup_start_lr
+    """
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device).train()
+    scaler = GradScaler()
+
+    # If no explicit warmup_end_lr, use the optimizer's initial LR
+    if warmup_end_lr is None:
+        warmup_end_lr = optimizer.param_groups[0]["lr"]
+
+    # Ensure warmup_start_lr is strictly > 0
+    if warmup_start_lr <= 0.0:
+        # pick a small fraction (0.1%) of warmup_end_lr, but at least 1e-6
+        warmup_start_lr = max(min_lr, warmup_end_lr * 1e-3)
+
+    # Build schedulers
+    warmup_scheduler = LinearLR(
+        optimizer,
+        start_factor=warmup_start_lr / warmup_end_lr,  # must be in (0,1]
+        end_factor=1.0,
+        total_iters=warmup_steps
+    )
+    decay_scheduler = CosineAnnealingLR(
+        optimizer,
+        T_max=max(total_steps - warmup_steps, 1),
+        eta_min=min_lr
+    )
+
+    # Prepare histories
+    epoch_loss_history      = []
+    batch_loss_history      = []
+    epoch_norm_mean_history = []
+    epoch_norm_std_history  = []
+    batch_norm_mean_history = []
+    batch_norm_std_history  = []
+
+    global_step = 0
+    epoch_pbar = tqdm(range(num_epochs), desc="Epochs")
+
+    for epoch in epoch_pbar:
+        total_loss    = 0.0
+        all_embeddings = []
+
+        batch_pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}", leave=False)
+        for batch in batch_pbar:
+            batch = batch.to(device)
+            optimizer.zero_grad()
+
+            # Forward
+            with autocast():
+                z    = model(batch.x, batch.edge_index)
+                loss = loss_fn(z, batch.edge_index)
+
+            # Backward + gradient clipping + optimizer step
+            scaler.scale(loss).backward()
+            clip_grad_norm_(model.parameters(), max_norm=max_grad_norm)
+            scaler.step(optimizer)
+            scaler.update()
+
+            # **Scheduler step after optimizer.step()**
+            if global_step < warmup_steps:
+                warmup_scheduler.step()
+            else:
+                decay_scheduler.step()
+            global_step += 1
+
+            # Record metrics
+            loss_value = loss.item()
+            total_loss += loss_value
+            batch_loss_history.append(loss_value)
+
+            norms = torch.norm(z.detach(), dim=1)
+            batch_norm_mean_history.append(norms.mean().item())
+            batch_norm_std_history.append(norms.std().item())
+
+            batch_pbar.set_postfix({"batch_loss": f"{loss_value:.4f}"})
+            all_embeddings.append(z.detach().cpu())
+
+        # Epoch‑level metrics
+        avg_loss = total_loss / len(train_loader)
+        epoch_loss_history.append(avg_loss)
+
+        with torch.no_grad():
+            epoch_emb = torch.cat(all_embeddings, dim=0)
+            norms     = torch.norm(epoch_emb, dim=1)
+            epoch_norm_mean_history.append(norms.mean().item())
+            epoch_norm_std_history.append(norms.std().item())
+
+        epoch_pbar.set_postfix({
+            "avg_loss":  f"{avg_loss:.4f}",
+            "mean_norm": f"{epoch_norm_mean_history[-1]:.4f}",
+            "std_norm":  f"{epoch_norm_std_history[-1]:.4f}"
+        })
+
+    # (Optional) Plot evaluation if requested
+    if plot_eval:
+        import matplotlib.pyplot as plt
+        # ... reuse your V1 plotting code here ...
+
+    return {
+        "epoch_loss_history":      epoch_loss_history,
+        "batch_loss_history":      batch_loss_history,
+        "epoch_norm_mean_history": epoch_norm_mean_history,
+        "epoch_norm_std_history":  epoch_norm_std_history,
+        "batch_norm_mean_history": batch_norm_mean_history,
+        "batch_norm_std_history":  batch_norm_std_history,
     }
