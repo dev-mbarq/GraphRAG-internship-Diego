@@ -7,6 +7,9 @@
 # Data: ignore todo dentro de /data/, excepto el placeholder
 /data/*
 !/data/.gitkeep
+!/data/retrieval_bundles/.gitkeep
+!/data/RIZIV_hackathon_main/.gitkeep
+!/data/BSARD_dataset/.gitkeep
 
 # Python cache
 __pycache__/
