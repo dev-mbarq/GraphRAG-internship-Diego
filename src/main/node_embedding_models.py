@@ -32,6 +32,7 @@ class GraphSAGE(torch.nn.Module):
 class GraphSAGE_V2(torch.nn.Module):
     """
     Implementation of the GraphSAGE model for node representation learning in graphs.
+    Adds support for layer norm compared to V1.
 
     Parameters:
         channels (list of int): List of layer dimensions, including input and output.

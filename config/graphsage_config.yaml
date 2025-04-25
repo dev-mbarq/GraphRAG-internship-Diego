@@ -12,9 +12,9 @@ input_data:
   embedding_dim: 1024 # BGE-M3: 1024; (OAI) text-embedding-3-small: 1536
 
 optimizer_params:
-  learning_rate: 0.00001
+  learning_rate: 0.0005
 
 training_params:
-  num_epochs: 2
+  num_epochs: 3
 
 bundle_tag: "bsard_V2"
