@@ -9,6 +9,7 @@ class GraphSAGE(torch.nn.Module):
 
     Parameters:
         channels (list of int): List of layer dimensions, including input and output.
+        
     """
 
     def __init__(self, channels):
@@ -36,6 +37,7 @@ class GraphSAGE_V2(torch.nn.Module):
 
     Parameters:
         channels (list of int): List of layer dimensions, including input and output.
+
     """
 
     def __init__(self, channels):

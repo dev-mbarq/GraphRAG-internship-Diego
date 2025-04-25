@@ -32,7 +32,7 @@ if src_path not in sys.path:
 from graph_formatting_utils import prepare_graph_for_gnn
 from loss_functions import unsupervised_loss_V0, unsupervised_loss_V1
 from node_embedding_models import GraphSAGE, GraphSAGE_V2
-from training_utils import train_in_cpu, train_in_gpu, train_model_in_gpu_V2
+from training_utils import train_in_cpu, train_in_gpu
 
 print("Importing dependencies... Done \n")
 

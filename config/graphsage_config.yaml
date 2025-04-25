@@ -15,6 +15,6 @@ optimizer_params:
   learning_rate: 0.0005
 
 training_params:
-  num_epochs: 3
+  num_epochs: 5
 
 bundle_tag: "bsard_V2"
