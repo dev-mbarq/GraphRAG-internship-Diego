@@ -7,7 +7,6 @@ from torch.nn.utils import clip_grad_norm_
 from torch.optim.lr_scheduler import LinearLR, CosineAnnealingLR
 
 
-
 def train_in_cpu(
     model, train_loader, optimizer, num_epochs, loss_fn, debug=False, plot_eval=False
 ):
@@ -129,82 +128,17 @@ def train_in_cpu(
             }
         )
 
-    # Plot evaluations if plot_eval is True
+    # Plot evaluations if requested
     if plot_eval:
-        # --- Loss Evolution Plots ---
-        plt.figure(figsize=(12, 5))
-        # Subplot: Average loss per epoch
-        plt.subplot(1, 2, 1)
-        plt.plot(
-            range(1, num_epochs + 1), epoch_loss_history, marker="o", linestyle="-"
+        loss_fig, norm_fig = plot_training_evolution(
+            num_epochs=num_epochs,
+            epoch_loss_history=epoch_loss_history,
+            batch_loss_history=batch_loss_history,
+            epoch_norm_mean_history=epoch_norm_mean_history,
+            epoch_norm_std_history=epoch_norm_std_history,
+            batch_norm_mean_history=batch_norm_mean_history,
+            batch_norm_std_history=batch_norm_std_history,
         )
-        plt.title("Average Loss per Epoch")
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.grid(True)
-        # Subplot: Loss per batch over the training
-        plt.subplot(1, 2, 2)
-        plt.plot(
-            range(1, len(batch_loss_history) + 1),
-            batch_loss_history,
-            marker=".",
-            linestyle="-",
-            color="orange",
-        )
-        plt.title("Loss per Batch")
-        plt.xlabel("Batch")
-        plt.ylabel("Loss")
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show()
-        plt.close("all")  # Close the loss figure before proceeding
-
-        # --- Embedding Norm Evolution Plots ---
-        plt.figure(figsize=(12, 5))
-        # Subplot: Epoch-level embedding norms (mean and std)
-        plt.subplot(1, 2, 1)
-        plt.plot(
-            range(1, num_epochs + 1),
-            epoch_norm_mean_history,
-            marker="o",
-            linestyle="-",
-            label="Mean Norm",
-        )
-        plt.plot(
-            range(1, num_epochs + 1),
-            epoch_norm_std_history,
-            marker="o",
-            linestyle="--",
-            label="Std Norm",
-        )
-        plt.title("Embedding Norms per Epoch")
-        plt.xlabel("Epoch")
-        plt.ylabel("L2 Norm")
-        plt.legend()
-        plt.grid(True)
-        # Subplot: Batch-level embedding norms (mean and std)
-        plt.subplot(1, 2, 2)
-        plt.plot(
-            range(1, len(batch_norm_mean_history) + 1),
-            batch_norm_mean_history,
-            marker=".",
-            linestyle="-",
-            label="Mean Norm",
-        )
-        plt.plot(
-            range(1, len(batch_norm_std_history) + 1),
-            batch_norm_std_history,
-            marker=".",
-            linestyle="--",
-            label="Std Norm",
-        )
-        plt.title("Embedding Norms per Batch")
-        plt.xlabel("Batch")
-        plt.ylabel("L2 Norm")
-        plt.legend()
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show()
 
     # Return all collected metrics for further analysis if needed
     return {
@@ -214,6 +148,8 @@ def train_in_cpu(
         "epoch_norm_std_history": epoch_norm_std_history,
         "batch_norm_mean_history": batch_norm_mean_history,
         "batch_norm_std_history": batch_norm_std_history,
+        "loss_fig": loss_fig,
+        "norm_fig": norm_fig,
     }
 
 
@@ -352,80 +288,15 @@ def train_in_gpu(
 
     # Plot evaluations if requested
     if plot_eval:
-        # --- Loss Evolution Plots ---
-        plt.figure(figsize=(12, 5))
-        # Subplot: Average loss per epoch
-        plt.subplot(1, 2, 1)
-        plt.plot(
-            range(1, num_epochs + 1), epoch_loss_history, marker="o", linestyle="-"
+        loss_fig, norm_fig = plot_training_evolution(
+            num_epochs=num_epochs,
+            epoch_loss_history=epoch_loss_history,
+            batch_loss_history=batch_loss_history,
+            epoch_norm_mean_history=epoch_norm_mean_history,
+            epoch_norm_std_history=epoch_norm_std_history,
+            batch_norm_mean_history=batch_norm_mean_history,
+            batch_norm_std_history=batch_norm_std_history,
         )
-        plt.title("Average Loss per Epoch")
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.grid(True)
-        # Subplot: Loss per batch over the training
-        plt.subplot(1, 2, 2)
-        plt.plot(
-            range(1, len(batch_loss_history) + 1),
-            batch_loss_history,
-            marker=".",
-            linestyle="-",
-            color="orange",
-        )
-        plt.title("Loss per Batch")
-        plt.xlabel("Batch")
-        plt.ylabel("Loss")
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show()
-        plt.close("all")  # Close the loss figure before proceeding
-
-        # --- Embedding Norm Evolution Plots ---
-        plt.figure(figsize=(12, 5))
-        # Subplot: Epoch-level embedding norms (mean and std)
-        plt.subplot(1, 2, 1)
-        plt.plot(
-            range(1, num_epochs + 1),
-            epoch_norm_mean_history,
-            marker="o",
-            linestyle="-",
-            label="Mean Norm",
-        )
-        plt.plot(
-            range(1, num_epochs + 1),
-            epoch_norm_std_history,
-            marker="o",
-            linestyle="--",
-            label="Std Norm",
-        )
-        plt.title("Embedding Norms per Epoch")
-        plt.xlabel("Epoch")
-        plt.ylabel("L2 Norm")
-        plt.legend()
-        plt.grid(True)
-        # Subplot: Batch-level embedding norms (mean and std)
-        plt.subplot(1, 2, 2)
-        plt.plot(
-            range(1, len(batch_norm_mean_history) + 1),
-            batch_norm_mean_history,
-            marker=".",
-            linestyle="-",
-            label="Mean Norm",
-        )
-        plt.plot(
-            range(1, len(batch_norm_std_history) + 1),
-            batch_norm_std_history,
-            marker=".",
-            linestyle="--",
-            label="Std Norm",
-        )
-        plt.title("Embedding Norms per Batch")
-        plt.xlabel("Batch")
-        plt.ylabel("L2 Norm")
-        plt.legend()
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show()
 
     # Return the metrics in case further analysis is needed
     return {
@@ -435,205 +306,215 @@ def train_in_gpu(
         "epoch_norm_std_history": epoch_norm_std_history,
         "batch_norm_mean_history": batch_norm_mean_history,
         "batch_norm_std_history": batch_norm_std_history,
+        "loss_fig": loss_fig,
+        "norm_fig": norm_fig,
     }
 
 
-def train_model_in_gpu_V2(
-    model,
-    train_loader,
-    optimizer,
-    num_epochs: int,
-    loss_fn,
-    warmup_steps: int,
-    total_steps: int,
-    warmup_start_lr: float = 0.0,
-    warmup_end_lr: float = None,
-    min_lr: float = 1e-6,
-    max_grad_norm: float = 1.0,
-    debug: bool = False,
-    plot_eval: bool = False
+# def train_model_in_gpu_V2(
+#    model,
+#    train_loader,
+#    optimizer,
+#    num_epochs: int,
+#    loss_fn,
+#    warmup_steps: int,
+#    total_steps: int,
+#    warmup_start_lr: float = 0.0,
+#    warmup_end_lr: float = None,
+#    min_lr: float = 1e-6,
+#    max_grad_norm: float = 1.0,
+#    debug: bool = False,
+#    plot_eval: bool = False
+# ):
+#    """
+#    Version 2 of the training loop with:
+#      - Linear warm‑up of the LR
+#      - Cosine‑annealing decay of the LR
+#      - Gradient clipping
+#      - Fixed scheduler ordering and non‑zero warmup_start_lr
+#    """
+#    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#    model.to(device).train()
+#    scaler = GradScaler()
+#
+#    # If no explicit warmup_end_lr, use the optimizer's initial LR
+#    if warmup_end_lr is None:
+#        warmup_end_lr = optimizer.param_groups[0]["lr"]
+#
+#    # Ensure warmup_start_lr is strictly > 0
+#    if warmup_start_lr <= 0.0:
+#        # pick a small fraction (0.1%) of warmup_end_lr, but at least 1e-6
+#        warmup_start_lr = max(min_lr, warmup_end_lr * 1e-3)
+#
+#    # Build schedulers
+#    warmup_scheduler = LinearLR(
+#        optimizer,
+#        start_factor=warmup_start_lr / warmup_end_lr,  # must be in (0,1]
+#        end_factor=1.0,
+#        total_iters=warmup_steps
+#    )
+#    decay_scheduler = CosineAnnealingLR(
+#        optimizer,
+#        T_max=max(total_steps - warmup_steps, 1),
+#        eta_min=min_lr
+#    )
+#
+#    # Prepare histories
+#    epoch_loss_history      = []
+#    batch_loss_history      = []
+#    epoch_norm_mean_history = []
+#    epoch_norm_std_history  = []
+#    batch_norm_mean_history = []
+#    batch_norm_std_history  = []
+#
+#    global_step = 0
+#    epoch_pbar = tqdm(range(num_epochs), desc="Epochs")
+#
+#    for epoch in epoch_pbar:
+#        total_loss    = 0.0
+#        all_embeddings = []
+#
+#        batch_pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}", leave=False)
+#        for batch in batch_pbar:
+#            batch = batch.to(device)
+#            optimizer.zero_grad()
+#
+#            # Forward
+#            with autocast():
+#                z    = model(batch.x, batch.edge_index)
+#                loss = loss_fn(z, batch.edge_index)
+#
+#            # Backward + gradient clipping + optimizer step
+#            scaler.scale(loss).backward()
+#            clip_grad_norm_(model.parameters(), max_norm=max_grad_norm)
+#            scaler.step(optimizer)
+#            scaler.update()
+#
+#            # **Scheduler step after optimizer.step()**
+#            if global_step < warmup_steps:
+#                warmup_scheduler.step()
+#            else:
+#                decay_scheduler.step()
+#            global_step += 1
+#
+#            # Record metrics
+#            loss_value = loss.item()
+#            total_loss += loss_value
+#            batch_loss_history.append(loss_value)
+#
+#            norms = torch.norm(z.detach(), dim=1)
+#            batch_norm_mean_history.append(norms.mean().item())
+#            batch_norm_std_history.append(norms.std().item())
+#
+#            batch_pbar.set_postfix({"batch_loss": f"{loss_value:.4f}"})
+#            all_embeddings.append(z.detach().cpu())
+#
+#        # Epoch‑level metrics
+#        avg_loss = total_loss / len(train_loader)
+#        epoch_loss_history.append(avg_loss)
+#
+#        with torch.no_grad():
+#            epoch_emb = torch.cat(all_embeddings, dim=0)
+#            norms     = torch.norm(epoch_emb, dim=1)
+#            epoch_norm_mean_history.append(norms.mean().item())
+#            epoch_norm_std_history.append(norms.std().item())
+#
+#        epoch_pbar.set_postfix({
+#            "avg_loss":  f"{avg_loss:.4f}",
+#            "mean_norm": f"{epoch_norm_mean_history[-1]:.4f}",
+#            "std_norm":  f"{epoch_norm_std_history[-1]:.4f}"
+#        })
+#
+#    return {
+#        "epoch_loss_history":      epoch_loss_history,
+#        "batch_loss_history":      batch_loss_history,
+#        "epoch_norm_mean_history": epoch_norm_mean_history,
+#        "epoch_norm_std_history":  epoch_norm_std_history,
+#        "batch_norm_mean_history": batch_norm_mean_history,
+#        "batch_norm_std_history":  batch_norm_std_history,
+#    }
+
+
+def plot_training_evolution(
+    num_epochs,
+    epoch_loss_history,
+    batch_loss_history,
+    epoch_norm_mean_history,
+    epoch_norm_std_history,
+    batch_norm_mean_history,
+    batch_norm_std_history,
 ):
     """
-    Version 2 of the training loop with:
-      - Linear warm‑up of the LR
-      - Cosine‑annealing decay of the LR
-      - Gradient clipping
-      - Fixed scheduler ordering and non‑zero warmup_start_lr
+    Plot training evolution metrics and return the figures for saving.
+    Returns:
+        tuple: (loss_fig, norm_fig) containing both matplotlib figures
     """
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    model.to(device).train()
-    scaler = GradScaler()
+    # Loss Evolution Plots
+    loss_fig = plt.figure(figsize=(12, 5))
+    plt.subplot(1, 2, 1)
+    plt.plot(range(1, num_epochs + 1), epoch_loss_history, marker="o", linestyle="-")
+    plt.title("Average Loss per Epoch")
+    plt.xlabel("Epoch")
+    plt.ylabel("Loss")
+    plt.grid(True)
 
-    # If no explicit warmup_end_lr, use the optimizer's initial LR
-    if warmup_end_lr is None:
-        warmup_end_lr = optimizer.param_groups[0]["lr"]
-
-    # Ensure warmup_start_lr is strictly > 0
-    if warmup_start_lr <= 0.0:
-        # pick a small fraction (0.1%) of warmup_end_lr, but at least 1e-6
-        warmup_start_lr = max(min_lr, warmup_end_lr * 1e-3)
-
-    # Build schedulers
-    warmup_scheduler = LinearLR(
-        optimizer,
-        start_factor=warmup_start_lr / warmup_end_lr,  # must be in (0,1]
-        end_factor=1.0,
-        total_iters=warmup_steps
+    plt.subplot(1, 2, 2)
+    plt.plot(
+        range(1, len(batch_loss_history) + 1),
+        batch_loss_history,
+        marker=".",
+        linestyle="-",
+        color="orange",
     )
-    decay_scheduler = CosineAnnealingLR(
-        optimizer,
-        T_max=max(total_steps - warmup_steps, 1),
-        eta_min=min_lr
+    plt.title("Loss per Batch")
+    plt.xlabel("Batch")
+    plt.ylabel("Loss")
+    plt.grid(True)
+    plt.tight_layout()
+
+    # Embedding Norm Evolution Plots
+    norm_fig = plt.figure(figsize=(12, 5))
+    plt.subplot(1, 2, 1)
+    plt.plot(
+        range(1, num_epochs + 1),
+        epoch_norm_mean_history,
+        marker="o",
+        linestyle="-",
+        label="Mean Norm",
     )
+    plt.plot(
+        range(1, num_epochs + 1),
+        epoch_norm_std_history,
+        marker="o",
+        linestyle="--",
+        label="Std Norm",
+    )
+    plt.title("Embedding Norms per Epoch")
+    plt.xlabel("Epoch")
+    plt.ylabel("L2 Norm")
+    plt.legend()
+    plt.grid(True)
 
-    # Prepare histories
-    epoch_loss_history      = []
-    batch_loss_history      = []
-    epoch_norm_mean_history = []
-    epoch_norm_std_history  = []
-    batch_norm_mean_history = []
-    batch_norm_std_history  = []
+    plt.subplot(1, 2, 2)
+    plt.plot(
+        range(1, len(batch_norm_mean_history) + 1),
+        batch_norm_mean_history,
+        marker=".",
+        linestyle="-",
+        label="Mean Norm",
+    )
+    plt.plot(
+        range(1, len(batch_norm_std_history) + 1),
+        batch_norm_std_history,
+        marker=".",
+        linestyle="--",
+        label="Std Norm",
+    )
+    plt.title("Embedding Norms per Batch")
+    plt.xlabel("Batch")
+    plt.ylabel("L2 Norm")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
 
-    global_step = 0
-    epoch_pbar = tqdm(range(num_epochs), desc="Epochs")
-
-    for epoch in epoch_pbar:
-        total_loss    = 0.0
-        all_embeddings = []
-
-        batch_pbar = tqdm(train_loader, desc=f"Epoch {epoch+1}", leave=False)
-        for batch in batch_pbar:
-            batch = batch.to(device)
-            optimizer.zero_grad()
-
-            # Forward
-            with autocast():
-                z    = model(batch.x, batch.edge_index)
-                loss = loss_fn(z, batch.edge_index)
-
-            # Backward + gradient clipping + optimizer step
-            scaler.scale(loss).backward()
-            clip_grad_norm_(model.parameters(), max_norm=max_grad_norm)
-            scaler.step(optimizer)
-            scaler.update()
-
-            # **Scheduler step after optimizer.step()**
-            if global_step < warmup_steps:
-                warmup_scheduler.step()
-            else:
-                decay_scheduler.step()
-            global_step += 1
-
-            # Record metrics
-            loss_value = loss.item()
-            total_loss += loss_value
-            batch_loss_history.append(loss_value)
-
-            norms = torch.norm(z.detach(), dim=1)
-            batch_norm_mean_history.append(norms.mean().item())
-            batch_norm_std_history.append(norms.std().item())
-
-            batch_pbar.set_postfix({"batch_loss": f"{loss_value:.4f}"})
-            all_embeddings.append(z.detach().cpu())
-
-        # Epoch‑level metrics
-        avg_loss = total_loss / len(train_loader)
-        epoch_loss_history.append(avg_loss)
-
-        with torch.no_grad():
-            epoch_emb = torch.cat(all_embeddings, dim=0)
-            norms     = torch.norm(epoch_emb, dim=1)
-            epoch_norm_mean_history.append(norms.mean().item())
-            epoch_norm_std_history.append(norms.std().item())
-
-        epoch_pbar.set_postfix({
-            "avg_loss":  f"{avg_loss:.4f}",
-            "mean_norm": f"{epoch_norm_mean_history[-1]:.4f}",
-            "std_norm":  f"{epoch_norm_std_history[-1]:.4f}"
-        })
-
-    # (Optional) Plot evaluation if requested
-    if plot_eval:
-        # --- Loss Evolution Plots ---
-        plt.figure(figsize=(12, 5))
-        # Subplot: Average loss per epoch
-        plt.subplot(1, 2, 1)
-        plt.plot(
-            range(1, num_epochs + 1), epoch_loss_history, marker="o", linestyle="-"
-        )
-        plt.title("Average Loss per Epoch")
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.grid(True)
-        # Subplot: Loss per batch over the training
-        plt.subplot(1, 2, 2)
-        plt.plot(
-            range(1, len(batch_loss_history) + 1),
-            batch_loss_history,
-            marker=".",
-            linestyle="-",
-            color="orange",
-        )
-        plt.title("Loss per Batch")
-        plt.xlabel("Batch")
-        plt.ylabel("Loss")
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show()
-        plt.close("all")  # Close the loss figure before proceeding
-
-        # --- Embedding Norm Evolution Plots ---
-        plt.figure(figsize=(12, 5))
-        # Subplot: Epoch-level embedding norms (mean and std)
-        plt.subplot(1, 2, 1)
-        plt.plot(
-            range(1, num_epochs + 1),
-            epoch_norm_mean_history,
-            marker="o",
-            linestyle="-",
-            label="Mean Norm",
-        )
-        plt.plot(
-            range(1, num_epochs + 1),
-            epoch_norm_std_history,
-            marker="o",
-            linestyle="--",
-            label="Std Norm",
-        )
-        plt.title("Embedding Norms per Epoch")
-        plt.xlabel("Epoch")
-        plt.ylabel("L2 Norm")
-        plt.legend()
-        plt.grid(True)
-        # Subplot: Batch-level embedding norms (mean and std)
-        plt.subplot(1, 2, 2)
-        plt.plot(
-            range(1, len(batch_norm_mean_history) + 1),
-            batch_norm_mean_history,
-            marker=".",
-            linestyle="-",
-            label="Mean Norm",
-        )
-        plt.plot(
-            range(1, len(batch_norm_std_history) + 1),
-            batch_norm_std_history,
-            marker=".",
-            linestyle="--",
-            label="Std Norm",
-        )
-        plt.title("Embedding Norms per Batch")
-        plt.xlabel("Batch")
-        plt.ylabel("L2 Norm")
-        plt.legend()
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show()
-
-    return {
-        "epoch_loss_history":      epoch_loss_history,
-        "batch_loss_history":      batch_loss_history,
-        "epoch_norm_mean_history": epoch_norm_mean_history,
-        "epoch_norm_std_history":  epoch_norm_std_history,
-        "batch_norm_mean_history": batch_norm_mean_history,
-        "batch_norm_std_history":  batch_norm_std_history,
-    }
+    return loss_fig, norm_fig

@@ -13,6 +13,7 @@ import sys
 import numpy as np
 import torch
 import yaml
+import matplotlib.pyplot as plt
 from torch_geometric.loader import NeighborLoader
 from torch_geometric.utils import to_undirected
 from torch_geometric.utils.convert import from_networkx
@@ -133,7 +134,7 @@ print("Setting up model and training pipeline... Done \n")
 print("Training model...")
 
 if not torch.cuda.is_available():
-    train_in_cpu(
+    training_outputs = train_in_cpu(
         model,
         train_loader,
         optimizer,
@@ -145,7 +146,7 @@ if not torch.cuda.is_available():
 
 elif torch.cuda.is_available():
     # V1
-    train_in_gpu(
+    training_outputs = train_in_gpu(
         model,
         train_loader,
         optimizer,
@@ -186,11 +187,13 @@ training_n_hops = len(graphsage_channels) - 1
 channels_str = "-".join([str(i) for i in graphsage_channels])
 training_num_epochs
 
+# Check if retrieval_bundles directory exists
+retrieval_bundles_dir = os.path.join(project_root, "data", "retrieval_bundles")
+os.makedirs(retrieval_bundles_dir, exist_ok=True)
+
 # Create bundle directory
 bundle_directory = os.path.join(
-    project_root,
-    "data",
-    "retrieval_bundles",
+    retrieval_bundles_dir,
     f"{bundle_tag}_{training_n_hops}hop_{training_num_epochs}epochs_{channels_str}",
 )
 
@@ -209,6 +212,20 @@ torch.save(model.state_dict(), output_model_bundle_path)
 config_bundle_path = os.path.join(bundle_directory, "config.yaml")
 with open(config_bundle_path, "w") as f:
     yaml.dump(config, f)
+
+# Extract figures from dictionary
+loss_fig = training_outputs.pop("loss_fig")
+norm_fig = training_outputs.pop("norm_fig")
+
+# Save figures
+loss_fig.savefig(os.path.join(bundle_directory, "loss_evolution.jpg"))
+norm_fig.savefig(os.path.join(bundle_directory, "norm_evolution.jpg"))
+plt.close("all")
+
+# Save metrics dictionary (now without figures)
+metrics_path = os.path.join(bundle_directory, "training_metrics.pkl")
+with open(metrics_path, "wb") as f:
+    pickle.dump(training_outputs, f)
 
 print("Saving embeddings, model weights and config... Done \n")
 
