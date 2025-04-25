@@ -8,7 +8,7 @@ loader_params:
   shuffle: true
 
 input_data:
-  graph_file_name: "BSARD_dataset/base_document_graph_wsem_V2.pkl" #"RIZIV_hackathon_main/base_hybrid_graph.pkl"
+  graph_file_name: "BSARD_dataset/base_document_graph_wsem.pkl" #"RIZIV_hackathon_main/base_hybrid_graph.pkl"
   embedding_dim: 1024 # BGE-M3: 1024; (OAI) text-embedding-3-small: 1536
 
 optimizer_params:
