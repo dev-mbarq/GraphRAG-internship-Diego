@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  graphrag:
+    # Build the image using the Dockerfile in this directory
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # Mount the entire repo into the container
+    volumes:
+      - ./:/GraphRAG-internship-Diego
+
+    # Set the working directory inside the container
+    working_dir: /GraphRAG-internship-Diego
