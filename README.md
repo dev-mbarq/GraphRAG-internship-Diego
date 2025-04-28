@@ -28,4 +28,6 @@ Regarding the project's environment and execution the following is also provided
 
 - __docker-compose.yml__: Defines the service to build the Docker image, mount the project directory as a volume, and es it  with a single `docker compose up --build`.
 
+__docker compose exec graphrag bash__
+
 Important: This project targets Python 3.11. The Dockerfile already specifies it, but if you install dependencies manually, please ensure you’re using Python 3.11 to avoid compatibility issues.

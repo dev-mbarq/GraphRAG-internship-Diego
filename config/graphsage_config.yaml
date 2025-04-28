@@ -1,5 +1,5 @@
 model_params:
-  channels: [1024, 768, 640]
+  channels: [1024, 768, 512]
   num_layers: 2
 
 loader_params:
@@ -15,6 +15,6 @@ optimizer_params:
   learning_rate: 0.0005
 
 training_params:
-  num_epochs: 5
+  num_epochs: 2
 
 bundle_tag: "bsard_V2"

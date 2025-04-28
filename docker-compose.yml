@@ -13,3 +13,7 @@ services:
 
     # Set the working directory inside the container
     working_dir: /GraphRAG-internship-Diego
+
+    stdin_open: true # -i
+    tty: true # -t 
+    command: bash 
