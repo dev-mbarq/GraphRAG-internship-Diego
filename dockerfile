@@ -7,7 +7,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory inside the container
-WORKDIR /GaphRAG-internship-Diego
+WORKDIR /GaphRAG-internship-
+
+# Install torch
+RUN pip install --no-cache-dir torch==2.1.0 --extra-index-url https://download.pytorch.org/whl/cpu
 
 # Copy the requirements file and install dependencies
 COPY requirements.txt .
