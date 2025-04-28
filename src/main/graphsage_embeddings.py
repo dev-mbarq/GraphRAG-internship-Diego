@@ -60,7 +60,7 @@ with open(config_file_path, "r") as f:
     config = yaml.safe_load(f)
 
 input_graph_file_name = config["input_data"]["graph_file_name"]
-input_graph_embedding_dim = config["input_data"]["embedding_dim"]
+input_graph_embedding_dim = config["input_data"]["channels"][0]
 
 graphsage_channels = config["model_params"]["channels"]
 
