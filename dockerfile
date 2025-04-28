@@ -22,8 +22,12 @@ RUN pip install --no-deps \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN pip install --no-cache-dir notebook
+
 # Copy the entire project code
 COPY . .
+
+EXPOSE 8888
 
 # Default command 
 # CMD ["python", XXX.py] 
