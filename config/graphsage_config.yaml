@@ -1,6 +1,5 @@
 model_params:
   channels: [1024, 768, 512]
-  num_layers: 2
 
 loader_params:
   num_neighbors: [15, 15]
@@ -9,7 +8,6 @@ loader_params:
 
 input_data:
   graph_file_name: "BSARD_dataset/base_document_graph_wsem_V2.pkl" 
-  embedding_dim: 1024 # BGE-M3: 1024; (OAI) text-embedding-3-small: 1536
 
 optimizer_params:
   learning_rate: 0.0005
