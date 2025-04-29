@@ -44,4 +44,12 @@ Additionally, Jupyter Notebook is started automatically and is reachable at http
 
 With the container running, it is possible to run `docker compose exec graphrag bash` to open an interactive shell inside the container that can be used to run scripts or perform other operations while the Notebook server continues to run in the background.
 
-__CUDA discalaimer__
+### External resources
+
+Several scripts and notebooks within this project can issue calls to external services—mostly for generating text embeddings or for invoking large-language-model completions. If these are executed, it is important to make sure the corresponding services/back-ends are available and correctly configured:
+
+Ollama (local LLM server): Start the Ollama daemon, download the required models in advance, and verify that the default endpoint (http://localhost:11434) is reachable. Without a suitable GPU the server will fall back to CPU, which can slow execution considerably.
+
+Azure OpenAI : Provide a valid set of endpoints and API keys that point to deployed resources that can provide the expected responsed.
+
+Note on GPUs and computational cost: Training GraphSAGE models (and GNNs in general) included in this repository is usually computation-intensive. Although the default Docker image is CPU-only so it can to stay portable, it is highly recommended to run the main training scripts on a CUDA-capable machine. 
