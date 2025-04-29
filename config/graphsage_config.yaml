@@ -7,12 +7,12 @@ loader_params:
   shuffle: true
 
 input_data:
-  graph_file_name: "BSARD_dataset/base_document_graph_wsem_V2.pkl" 
+  graph_file_name: "RIZIV_hackathon_main/RIZIV_base_hybrid_graph_wsem.pkl" 
 
 optimizer_params:
   learning_rate: 0.0005
 
 training_params:
-  num_epochs: 2
+  num_epochs: 10
 
-bundle_tag: "bsard_V2"
+bundle_tag: "RIZIV_test"
