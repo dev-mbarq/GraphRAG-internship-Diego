@@ -1,5 +1,6 @@
 # Environment files
 *.env
+.venv/
 
 # Ignore any file or directory that starts with WIP in any level
 **/WIP*

@@ -1,5 +1,5 @@
 model_params:
-  channels: [1024, 768, 512]
+  channels: [1024, 1024, 1024]
 
 loader_params:
   num_neighbors: [15, 15]
@@ -7,7 +7,7 @@ loader_params:
   shuffle: true
 
 input_data:
-  graph_file_name: "RIZIV_hackathon_main/RIZIV_base_hybrid_graph_wsem.pkl" 
+  graph_file_name: "BSARD_dataset/intermediate/hybrid_graph_full_wsem.pkl" 
 
 optimizer_params:
   learning_rate: 0.0005
