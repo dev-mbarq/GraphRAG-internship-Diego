@@ -1,18 +1,18 @@
 model_params:
-  channels: [1024, 512]
+  channels: [1024, 1024]
 
 loader_params:
-  num_neighbors: [10]
+  num_neighbors: [6]
   batch_size: 256
   shuffle: true
 
 input_data:
-  graph_file_name: "BSARD_dataset/intermediate/hybrid_graph_full_wsem.pkl" 
+  graph_file_name: "BSARD_dataset/intermediate/G_semantic.pkl" 
 
 optimizer_params:
   learning_rate: 0.0005
 
 training_params:
-  num_epochs: 20
+  num_epochs: 8
 
 bundle_tag: "BSARD_test"

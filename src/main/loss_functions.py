@@ -65,7 +65,7 @@ def unsupervised_loss_V0(z, edge_index, num_neg_samples=5):
     return loss
 
 
-def unsupervised_loss_V1(z, edge_index, num_neg_samples=5):
+def unsupervised_loss_V1(z, edge_index, num_neg_samples=1):
     """
     Computes the unsupervised loss for GraphSAGE using contrastive negative sampling.
 
@@ -126,3 +126,32 @@ def unsupervised_loss_V1(z, edge_index, num_neg_samples=5):
 
     # Return the loss tensor (already connected to the computation graph)
     return loss
+
+
+# – Hard-negative sampling:
+#   * Sample “hard” negatives (closest embeddings) instead of random negatives
+#   * Keeps training signal alive longer by forcing the model to separate difficult cases
+
+# – InfoNCE with temperature:
+#   * Use NT-Xent style loss:
+#       -log( exp(z·z⁺/T) / Σ_j exp(z·z_j /T) )
+#   * Temperature T<1 sharpens distribution and slows saturation
+
+# – Margin/Triplet loss:
+#   * Form triplets (anchor, positive, negative)
+#   * loss = max(0, d(a,p) – d(a,n) + margin)
+#   * margin m>0 enforces a minimum gap between positives and negatives
+
+# – Dispersion regularizer:
+#   * Penalize excessive internal similarity:
+#       β * Σ_{i≠j} (z_iᵀ z_j)²
+#   * Promotes angular diversity across all node embeddings
+
+# – Alignment to semantic base:
+#   * Add small MSE term to keep hybrid z close to original semantic s:
+#       λ * ‖z – s‖²
+#   * Preserves anchor in the original semantic space
+
+# – Multi-task / auto-encoding:
+#   * Jointly reconstruct semantic embeddings from hybrid via a tiny decoder
+#   * Adds MSE/BCE reconstruction loss to force retention of core semantics
