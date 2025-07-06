@@ -313,7 +313,7 @@ def train_in_gpu(
 
 
 def train_in_gpu_with_checkpoints(
-    model, train_loader, optimizer, num_epochs, loss_fn, debug=False, plot_eval=False, checkpoint_interval=10, checkpoint_dir=None
+    model, train_loader, optimizer, num_epochs, loss_fn, debug=False, plot_eval=False, checkpoint_interval=10, checkpoint_dir=None, is_article=None
 ):
     """
     Training function for the GraphSAGE model with unsupervised loss on GPU.
@@ -382,7 +382,10 @@ def train_in_gpu_with_checkpoints(
                         print("[DEBUG] Detected NaN values in embeddings")
 
                 # Compute loss using the unsupervised loss function
-                loss = loss_fn(z, batch.edge_index)
+                if is_article is not None:
+                    loss = loss_fn(z, batch.edge_index, is_article=is_article)
+                else:
+                    loss = loss_fn(z, batch.edge_index)
                 if debug:
                     print(f"[DEBUG] Loss value for this batch: {loss.item():.4f}")
                     if torch.isnan(loss):

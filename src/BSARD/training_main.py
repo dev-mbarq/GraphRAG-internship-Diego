@@ -75,6 +75,9 @@ def main_training_pipeline(config):
     with open(graph_path, "rb") as f:
         G = pickle.load(f)
 
+    nodes = list(G.nodes())
+    mask_list = [G.nodes[n].get("node_type") == "Article" for n in nodes] 
+
     formatted_G, incidences = prepare_graph_for_gnn(G, embedding_dim=input_graph_embedding_dim)
 
     # Convert the NetworkX graph to a PyTorch Geometric Data object
@@ -89,6 +92,8 @@ def main_training_pipeline(config):
 
     # Set device for model training
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    is_article = torch.tensor(mask_list, dtype=torch.bool, device=device)
 
     # Move the model to the device
     model = model.to(device)
@@ -113,7 +118,8 @@ def main_training_pipeline(config):
     elif torch.cuda.is_available():
         #training_outputs = train_in_gpu(model, train_loader, optimizer, num_epochs=training_num_epochs, loss_fn=unsupervised_loss_V1, debug=False, plot_eval=True)
         training_outputs = train_in_gpu_with_checkpoints(model, train_loader, optimizer, num_epochs=training_num_epochs, loss_fn=unsupervised_loss_V2, debug=False, plot_eval=True, 
-                                                         checkpoint_interval=5, checkpoint_dir=os.path.join(project_root, "data", "BSARD_dataset", "checkpoints"))
+                                                         checkpoint_interval=5, checkpoint_dir=os.path.join(project_root, "data", "BSARD_dataset", "checkpoints"),
+                                                         is_article=is_article)
 
     #  Add Graph_SAGE embeddings to the baseline graph
 

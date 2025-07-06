@@ -128,7 +128,7 @@ def unsupervised_loss_V1(z, edge_index, num_neg_samples=1):
     return loss
 
 
-def unsupervised_loss_V2(z, edge_index, alpha=1.0, temperature=0.5):
+def unsupervised_loss_V2(z, edge_index, alpha=1.0, temperature=0.5, is_article=None):
     """
     Contrastive loss with:
       - ADAPTIVE negative sampling (K ∝ deg(u))
@@ -150,6 +150,11 @@ def unsupervised_loss_V2(z, edge_index, alpha=1.0, temperature=0.5):
 
     for edge in edge_index.T:
         u, v = edge.tolist()
+
+        # Aticle mask 
+        if is_article is not None:
+            if not is_article[u]:
+                continue 
 
         # POSITIVE TERM with TEMPERATURE (NEW)
         dot_pos = torch.dot(z[u], z[v]) / temperature    # # TEMPERATURE SCALING
