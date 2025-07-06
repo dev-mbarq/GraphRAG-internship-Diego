@@ -338,3 +338,71 @@ class GAT_V1(torch.nn.Module):
         x = F.dropout(x, p=self.dropout_rate, training=self.training)
         x = self.convs[-1](x, edge_index)
         return x
+    
+
+class GraphSAGE_V3_max_norm(torch.nn.Module):
+    """
+    GraphSAGE with:
+      - Residual (skip) connections with learnable mix weights
+      - Layer normalization
+      - Feature dropout
+      - Edge dropout (DropEdge)
+    """
+    def __init__(self, channels, drop_edge_rate=0.2, dropout_rate=0.2):
+        super().__init__()
+        self.drop_edge_rate = drop_edge_rate
+        self.dropout_rate = dropout_rate
+
+        self.convs  = torch.nn.ModuleList()
+        self.norms  = torch.nn.ModuleList()
+        self.resids = torch.nn.ModuleList()
+        self.alphas = torch.nn.ParameterList()
+
+        for in_ch, out_ch in zip(channels[:-1], channels[1:]):
+            self.convs.append(SAGEConv(in_ch, out_ch, aggr='max'))
+            self.norms.append(GraphNorm(out_ch))
+
+            # RESIDUAL PROJECTOR (NEW)
+            if in_ch != out_ch:
+                self.resids.append(torch.nn.Linear(in_ch, out_ch))
+            else:
+                self.resids.append(torch.nn.Identity())
+
+            # LEARNABLE SKIP WEIGHT α (NEW)
+            alpha = torch.nn.Parameter(torch.tensor(0.5))
+            self.alphas.append(alpha)
+
+    def forward(self, x, edge_index):
+        for conv, norm, resid, alpha in zip(
+            self.convs[:-1], self.norms[:-1], self.resids[:-1], self.alphas[:-1]
+        ):
+            h_in = x
+
+            # EDGE DROPOUT (NEW)
+            if self.training and self.drop_edge_rate > 0:
+                edge_index, _ = dropout_edge(
+                    edge_index, p=self.drop_edge_rate, force_undirected=True
+                )
+
+            # GRAPH SAGE + NORM
+            h = conv(h_in, edge_index)
+            h = norm(h)
+
+            # RESIDUAL MIXING WITH LEARNABLE WEIGHT α (NEW)
+            h = alpha * h + (1.0 - alpha) * resid(h_in)
+
+            # ACTIVATION
+            x = F.relu(h)
+
+            # FEATURE DROPOUT (NEW)
+            x = F.dropout(x, p=self.dropout_rate, training=self.training)
+
+        # FINAL LAYER WITHOUT RESIDUAL OR ACTIVATION
+        if self.training and self.drop_edge_rate > 0:
+            edge_index, _ = dropout_edge(
+                edge_index, p=self.drop_edge_rate, force_undirected=True
+            )
+        x = self.convs[-1](x, edge_index)
+        x = self.norms[-1](x)                     # FINAL LAYER NORM
+        x = F.normalize(x, p=2, dim=1)           # UNIT-NORM EMBEDDINGS (NEW)
+        return x
