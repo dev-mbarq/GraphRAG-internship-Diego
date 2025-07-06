@@ -16,7 +16,7 @@ try:
     # This will work in scripts where __file__ is defined
     current_dir = os.path.dirname(os.path.abspath(__file__))
     # Assuming "src" is parallel to the script folder
-    project_root = os.path.abspath(os.path.join(current_dir, ".."))
+    project_root = os.path.abspath(os.path.join(current_dir, "..",".."))
 except NameError:
     # In notebooks __file__ is not defined: assume we're in notebooks/
     project_root = os.path.abspath(os.path.join(os.getcwd(), ".."))
@@ -58,7 +58,7 @@ def main_training_pipeline(config):
 
     def load_model(model_name, channels, **kwargs):
         # 1) Importa dinámicamente el módulo donde están definidas las clases
-        m = importlib.import_module("models")
+        m = importlib.import_module("main.node_embedding_models")
         # 2) Saca de ese módulo la clase con el mismo nombre que MODEL_NAME
         try:
             ModelClass = getattr(m, model_name)

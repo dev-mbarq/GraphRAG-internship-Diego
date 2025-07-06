@@ -1,24 +1,24 @@
 preprocessing_params:
   keyterm_mincount: 5
   uniqueact_mincount: 2
-  n_similarity_edges: 10
+  n_similarity_edges: 8
 
 model:
-  model_name: "GraphSAGE_V3_mean"
-  model_channels: [1024, 1024, 512]
+  model_name: "GraphSAGE_V3_max"
+  model_channels: [1024, 1024]
 
 loader_params:
-  num_neighbors: [5, 5]
+  num_neighbors: [5]
   batch_size: 256
   shuffle: true
 
 input_data:
-  graph_file_name: "BSARD_dataset/intermediate/G_semantic.pkl" 
+  graph_file_name: "BSARD_dataset/intermediate/G_pretraining.pkl" 
 
 optimizer_params:
-  learning_rate: 0.0005
+  learning_rate: 0.0001
 
 training_params:
-  num_epochs: 8
+  num_epochs: 10
 
-bundle_tag: "BSARD_test"
+bundle_tag: "BSARD_TEST"
