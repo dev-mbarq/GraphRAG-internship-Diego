@@ -1,8 +1,8 @@
 model_params:
-  channels: [1024, 1024]
+  channels: [1024, 512]
 
 loader_params:
-  num_neighbors: [6]
+  num_neighbors: [5, 5]
   batch_size: 256
   shuffle: true
 
