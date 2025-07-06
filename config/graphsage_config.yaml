@@ -1,5 +1,11 @@
-model_params:
-  channels: [1024, 512]
+preprocessing_params:
+  keyterm_mincount: 5
+  uniqueact_mincount: 2
+  n_similarity_edges: 10
+
+model:
+  model_name: "GraphSAGE_V3_mean"
+  model_channels: [1024, 1024, 512]
 
 loader_params:
   num_neighbors: [5, 5]
