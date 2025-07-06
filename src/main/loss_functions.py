@@ -96,7 +96,7 @@ def unsupervised_loss_V1(z, edge_index, num_neg_samples=1):
     for edge in edge_index.T:
         u, v = edge.tolist()
         neighbors[u].add(v)
-        neighbors[v].add(u)
+        neighbors[v].add(u) 
 
     # Initialize accumulators for the positive and negative loss components as PyTorch tensors.
     pos_loss = torch.tensor(0.0, device=device)
@@ -126,6 +126,58 @@ def unsupervised_loss_V1(z, edge_index, num_neg_samples=1):
 
     # Return the loss tensor (already connected to the computation graph)
     return loss
+
+
+def unsupervised_loss_V2(z, edge_index, alpha=1.0, temperature=0.5):
+    """
+    Contrastive loss with:
+      - ADAPTIVE negative sampling (K ∝ deg(u))
+      - HARD-negative mining (select top-K hardest)
+      - TEMPERATURE scaling on logits
+    """
+    device    = z.device
+    num_nodes = z.shape[0]
+
+    # Precompute neighbor sets
+    neighbors = {u: set() for u in range(num_nodes)}
+    for edge in edge_index.T:
+        u, v = edge.tolist()
+        neighbors[u].add(v); neighbors[v].add(u)
+
+    pos_loss = torch.tensor(0.0, device=device)
+    neg_loss = torch.tensor(0.0, device=device)
+    total_edges = edge_index.shape[1]
+
+    for edge in edge_index.T:
+        u, v = edge.tolist()
+
+        # POSITIVE TERM with TEMPERATURE (NEW)
+        dot_pos = torch.dot(z[u], z[v]) / temperature    # # TEMPERATURE SCALING
+        pos_loss += F.logsigmoid(dot_pos)
+
+        # ADAPTIVE K based on degree (NEW)
+        deg_u = len(neighbors[u])
+        K     = max(1, int(alpha * deg_u))               # # ADAPTIVE NEG SAMPLE
+
+        # HARD-NEGATIVE SAMPLING (NEW)
+        pool_size = 10 * K
+        negs = []
+        while len(negs) < pool_size:
+            v_neg = random.randint(0, num_nodes - 1)
+            if v_neg not in neighbors[u] and v_neg != u:
+                negs.append(v_neg)
+        # compute all candidate dots with TEMP scaling
+        dots = [(torch.dot(z[u], z[vn]) / temperature, vn) for vn in negs]
+        # pick the K hardest (highest dot -> hardest negatives)
+        hardest = sorted(dots, key=lambda x: x[0], reverse=True)[:K]
+        # accumulate negative loss on hard negatives
+        for dot_neg, _ in hardest:
+            neg_loss += F.logsigmoid(-dot_neg)
+
+    # combine and average
+    loss = -(pos_loss + neg_loss) / total_edges
+    return loss
+
 
 
 # – Hard-negative sampling:

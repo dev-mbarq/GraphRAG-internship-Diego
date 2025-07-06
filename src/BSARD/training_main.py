@@ -26,7 +26,7 @@ if src_path not in sys.path:
     sys.path.append(src_path)
 
 from main.graph_formatting_utils import prepare_graph_for_gnn
-from main.loss_functions import unsupervised_loss_V0, unsupervised_loss_V1
+from main.loss_functions import unsupervised_loss_V0, unsupervised_loss_V1, unsupervised_loss_V2
 from main.node_embedding_models import *
 from main.training_utils import train_in_cpu, train_in_gpu, train_in_gpu_with_checkpoints
 
@@ -108,11 +108,11 @@ def main_training_pipeline(config):
     scaler = torch.cuda.amp.GradScaler() if torch.cuda.is_available() else None
 
     if not torch.cuda.is_available():
-        training_outputs = train_in_cpu(model, train_loader, optimizer, num_epochs=training_num_epochs, loss_fn=unsupervised_loss_V1, debug=False, plot_eval=True)
+        training_outputs = train_in_cpu(model, train_loader, optimizer, num_epochs=training_num_epochs, loss_fn=unsupervised_loss_V2, debug=False, plot_eval=True)
 
     elif torch.cuda.is_available():
         #training_outputs = train_in_gpu(model, train_loader, optimizer, num_epochs=training_num_epochs, loss_fn=unsupervised_loss_V1, debug=False, plot_eval=True)
-        training_outputs = train_in_gpu_with_checkpoints(model, train_loader, optimizer, num_epochs=training_num_epochs, loss_fn=unsupervised_loss_V1, debug=False, plot_eval=True, 
+        training_outputs = train_in_gpu_with_checkpoints(model, train_loader, optimizer, num_epochs=training_num_epochs, loss_fn=unsupervised_loss_V2, debug=False, plot_eval=True, 
                                                          checkpoint_interval=5, checkpoint_dir=os.path.join(project_root, "data", "BSARD_dataset", "checkpoints"))
 
     #  Add Graph_SAGE embeddings to the baseline graph
