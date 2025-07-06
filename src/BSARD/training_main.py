@@ -168,4 +168,4 @@ def main_training_pipeline(config):
     with open(metrics_path, "wb") as f:
         pickle.dump(training_outputs, f)
 
-    return training_outputs
+    return training_outputs, bundle_directory
